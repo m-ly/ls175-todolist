@@ -11,19 +11,19 @@ end
 
 helpers do 
   def list_complete?(list)
-    todos_size(list) > 0 && finished_todos(list) == todos_size(list)
+    todos_count(list) > 0 && finished_todos_count(list) == todos_count(list)
   end
 
   def list_class(list)
     "complete" if list_complete?(list)
   end
 
-  def todos_size(list)
+  def todos_count(list)
     list[:todos].size
   end
 
-  def finished_todos(list)
-    list[:todos].count { |todo| todo[:completed] }
+  def finished_todos_count(list)
+    list[:todos].select { |list| list[:completed] }.size
   end
 
   def sort_lists(lists, &block)

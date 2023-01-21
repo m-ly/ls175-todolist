@@ -1,11 +1,8 @@
-<% if list_complete?(@list)%>
-  <section id="todos" class ="<%= list_class(@list) %>" >
-<% else %>
-  <section id="todos">
-<% end %>
+
+<section id="todos" class ="<%= list_class(@list) %>" >
   <header>
-   <h2><%= @list[:name] %></h2>
-   <ul>
+    <h2><%= @list[:name] %></h2>
+    <ul>
     <li>
       <form action="/lists/<%= @list_id %>/complete-all" method="post" class="check">
         <input type="hidden" name="complete_all" value="false" >
@@ -26,7 +23,7 @@
 
 <ul>
   <% sort_todos(@list[:todos]) do |todo, index| %>
-      <% if todo[:completed] == :true %>
+      <% if todo[:completed] %>
         <li class="complete">
       <% else %>
         <li>
