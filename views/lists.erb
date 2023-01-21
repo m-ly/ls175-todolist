@@ -7,7 +7,7 @@
     <% end %>
         <a href="/lists/<%= index %>">
           <h2><%= list[:name] %></h2>
-          <p><%= finished_todos(list) %> / <%=  todos_size(list) %></p>
+          <p><%= finished_todos_count(list) %> / <%=  todos_count(list) %></p>
         </a>
       </li>
   <% end %>
