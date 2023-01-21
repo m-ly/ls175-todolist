@@ -25,6 +25,25 @@ helpers do
   def finished_todos(list)
     list[:todos].count { |todo| todo[:completed] }
   end
+
+  def sort_lists(lists, &block)
+    complete_lists, incomplete_lists = lists.partition { |list| list_complete?(list) }
+
+    incomplete_lists.each { |list| yield(list, lists.index(list))}
+    complete_lists.each { |list| yield(list, lists.index(list))}
+  end
+
+  def sort_todos(todos, &block)
+    incomplete_todos = {}
+    complete_todos = {}
+
+    todos.each_with_index do |todo, index|
+      todo[:completed] ? complete_todos[todo] = index : incomplete_todos[todo] = index
+    end 
+
+    incomplete_todos.each(&block)
+    complete_todos.each(&block)
+  end
 end 
 
 before do 
@@ -37,7 +56,7 @@ end
 
 # View all lists
 get "/lists" do
-  @lists = session[:lists].sort_by { |list| list_complete?(list) ? 1 : 0 }
+  @lists = session[:lists]
   erb :lists, layout: :layout
 end
 
