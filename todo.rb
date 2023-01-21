@@ -7,6 +7,7 @@ require "tilt/erubis"
 configure do 
   enable :sessions
   set :session_secret, 'secret'
+  set :erb, :escape_html => true
 end
 
 helpers do 
@@ -89,26 +90,34 @@ post "/lists" do
   end
 end
 
+def load_list(index)
+  list = session[:lists][index] if index <= session[:lists].size
+  return list if list
+
+  session[:error] = "The specific list was not found."
+  redirect "/lists"
+end
+
 # View a single list
 get "/lists/:id" do
   @list_id = params[:id].to_i
-  @list = session[:lists][@list_id]
-  @todos = @lists
+  @list = load_list(@list_id)
 
   erb :list, layout: :layout
+
 end
 
 # Edit a list name
 get "/lists/:id/edit" do
   id = params[:id].to_i
-  @list = session[:lists][id]
+  @list = load_list(id)
   erb :edit_list, layout: :layout
 end 
 
 # Update an existing todo list name
 post "/lists/:id" do 
   id = params[:id].to_i
-  @list = session[:lists][id]
+  @list = load_list(id)
   list_name = params[:list_name].strip
 
   error = error_for_list_name(list_name)
@@ -140,7 +149,7 @@ end
 # Add a todo to a list
 post "/lists/:list_id/todos" do
   @list_id = params[:list_id].to_i
-  @list = session[:lists][@list_id]
+  @list = load_list(@list_id)
   text = params[:todo].strip
 
   error = error_for_todo_input(text)
@@ -159,7 +168,7 @@ end
 # Delete a todo
 post "/lists/:list_id/todos/:todo_id/delete" do
   @list_id = params[:list_id].to_i
-  @list = session[:lists][@list_id]
+  @list = load_list(@list_id)
   todo_id = params[:todo_id].to_i
 
   @list[:todos].delete_at(todo_id)
@@ -170,7 +179,7 @@ end
 # Complete a todo
 post "/lists/:list_id/todos/:todo_id/finished" do
   @list_id = params[:list_id].to_i
-  @list = session[:lists][@list_id]
+  @list = load_list(@list_id)
   todo_id = params[:todo_id].to_i
   
   is_completed = params[:completed] == "true"
@@ -184,7 +193,7 @@ end
 # Complete all todos
 post "/lists/:id/complete-all" do
   @list_id = params[:id].to_i
-  @list = session[:lists][@list_id]
+  @list = load_list(@list_id)
 
   @list[:todos].each do |todo|
     todo[:completed] = :true
