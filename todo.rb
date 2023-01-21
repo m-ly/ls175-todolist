@@ -149,7 +149,7 @@ post "/lists/:list_id/todos" do
     session[:error] = error
     erb :list, layout: :layout
   else
-    @list[:todos] << { name: params[:todo] , completed: :false }
+    @list[:todos] << { name: params[:todo] , completed: false }
     session[:success] = "The todo was added."
     redirect "/lists/#{@list_id}"
   end
